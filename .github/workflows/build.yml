@@ -35,7 +35,7 @@ jobs:
         run: cargo binstall espflash --no-confirm
 
       - name: Generate flashable binary
-        run: espflash save-image --chip esp32s3 target/xtensa-esp32s3-none-elf/release/esp32s3-keyboard keyboard.bin
+        run: espflash save-image --chip esp32s3 --merge target/xtensa-esp32s3-none-elf/release/esp32s3-keyboard keyboard.bin
 
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v4
