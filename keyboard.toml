@@ -18,28 +18,20 @@ row2col = true
 rows = 4
 cols = 4
 layers = 2
-matrix_map = """
-(0,0) (0,1) (0,2) (0,3)
-(1,0) (1,1) (1,2) (1,3)
-(2,0) (2,1) (2,2) (2,3)
-(3,0) (3,1) (3,2) (3,3)
-"""
-
-[[layer]]
-keys = """
-Kp7 Kp8 Kp9 Backspace
-Kp4 Kp5 Kp6 Delete
-Kp1 Kp2 Kp3 Enter
-Kp0 KpDot Space MO(1)
-"""
-
-[[layer]]
-keys = """
-A B C D
-E F PlayPause VolumeUp
-Mute VolumeDown NextTrack PrevTrack
-_ _ _ MO(1)
-"""
+keymap = [
+    [
+        ["Kp7", "Kp8", "Kp9", "Backspace"],
+        ["Kp4", "Kp5", "Kp6", "Delete"],
+        ["Kp1", "Kp2", "Kp3", "Enter"],
+        ["Kp0", "KpDot", "Space", "MO(1)"]
+    ],
+    [
+        ["A", "B", "C", "D"],
+        ["E", "F", "MediaPlayPause", "AudioVolUp"],
+        ["AudioMute", "AudioVolDown", "MediaNextTrack", "MediaPrevTrack"],
+        ["_", "_", "_", "MO(1)"]
+    ],
+]
 
 [ble]
 enabled = true
