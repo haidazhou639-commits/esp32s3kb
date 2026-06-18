@@ -7,7 +7,7 @@ edition = "2021"
 rmk = { version = "0.8.2", features = ["esp32s3_ble", "vial"] }
 embassy-executor = { version = "0.6.3", features = ["task-arena-size-32768"] }
 esp-backtrace = { version = "0.19.0", features = ["esp32s3", "panic-handler", "println"] }
-esp-hal = { version = "1.1.1", features = ["esp32s3", "async"] }
+esp-hal = { version = "1.1.1", features = ["esp32s3", "unstable"] }
 esp-storage = { version = "0.9.0", features = ["esp32s3"] }
 esp-alloc = { version = "0.10.0" }
 esp-println = { version = "0.17.0", features = ["esp32s3", "log"] }
