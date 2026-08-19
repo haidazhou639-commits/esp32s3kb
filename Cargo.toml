@@ -13,23 +13,24 @@ rmk = { git = "https://github.com/rmk-rs/rmk", default-features = false, feature
     "ssd1306",
 ] }
 
-embassy-executor = { version = "0.9.0" }
+embassy-executor = { version = "0.10.0" }
 esp-backtrace = { version = "0.18", features = [
     "esp32s3",
     "panic-handler",
     "println",
 ] }
-esp-hal = { version = "1.1", features = ["esp32s3", "unstable"] }
+esp-hal = { version = "1.1", features = ["esp32s3", "unstable", "embassy"] }
 esp-storage = { version = "0.9.0", features = ["esp32s3"] }
 esp-alloc = { version = "0.10.0" }
 esp-println = { version = "0.16.0", features = ["esp32s3", "log-04"] }
-esp-radio = { version = "0.18.0", features = ["esp32s3", "unstable", "ble"] }
+esp-radio = { version = "1.0.0-beta.0", features = ["esp32s3", "unstable", "ble"] }
 esp-rtos = { version = "0.3.0", features = ["esp32s3", "esp-radio", "embassy"] }
 esp-bootloader-esp-idf = { version = "0.4", features = ["esp32s3", "log-04"] }
 static_cell = "2"
 bt-hci = { version = "0.9" }
 rand_core = { version = "0.6", default-features = false }
 display-interface-i2c = "0.5"
+embassy-time = { version = "0.5.0" }
 
 
 [build-dependencies]

@@ -54,16 +54,3 @@ clear_storage = false
 [event]
 layer_change.subs = 2
 
-[display]
-driver = "ssd1306"
-size = "128x64"
-rotation = 0
-renderer = "OledRenderer"
-min_render_interval = 10
-
-[display.protocol.i2c]
-instance = "I2C0"
-scl = "GPIO9"
-sda = "GPIO10"
-address = 0x3c
-
