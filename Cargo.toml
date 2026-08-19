@@ -60,3 +60,13 @@ incremental = false
 lto = 'thin'
 opt-level = 3
 overflow-checks = false
+
+[patch.crates-io]
+esp-hal = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-backtrace = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-storage = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-alloc = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-println = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-radio = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-rtos = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }
+esp-bootloader-esp-idf = { git = "https://github.com/esp-rs/esp-hal", branch = "main" }

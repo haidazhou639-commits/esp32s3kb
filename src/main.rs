@@ -5,11 +5,16 @@ use esp_backtrace as _;
 use rmk::macros::rmk_keyboard;
 
 type DisplayType = ::rmk::display::ssd1306::Ssd1306Async<
-    ::rmk::display::ssd1306::I2CDisplayInterface<
-        ::esp_hal::i2c::master::I2c<'static, ::esp_hal::Blocking>,
+    ::display_interface_i2c::I2CInterface<
+        ::esp_hal::i2c::master::I2c<'static, ::esp_hal::Async>,
     >,
     ::rmk::display::ssd1306::prelude::DisplaySize128x64,
-    ::rmk::display::ssd1306::prelude::BufferedGraphicsMode<::rmk::display::ssd1306::prelude::DisplaySize128x64>,
+    ::rmk::display::ssd1306::mode::BufferedGraphicsMode<
+        ::display_interface_i2c::I2CInterface<
+            ::esp_hal::i2c::master::I2c<'static, ::esp_hal::Async>,
+        >,
+        ::rmk::display::ssd1306::prelude::DisplaySize128x64,
+    >,
 >;
 
 #[embassy_executor::task]
@@ -33,14 +38,15 @@ mod keyboard {
         let ble_controller: ::bt_hci::controller::ExternalController<_, 64> = ::bt_hci::controller::ExternalController::new(connector);
         let ble_addr = [0x7e, 0xfe, 0x73, 0x05, 0x66, 0xe3];
 
-        // Initialize I2C for display
+        // Initialize I2C for display in Async mode
         let i2c = ::esp_hal::i2c::master::I2c::new(
             p.I2C0,
             ::esp_hal::i2c::master::Config::default()
         )
         .unwrap()
         .with_sda(p.GPIO10)
-        .with_scl(p.GPIO9);
+        .with_scl(p.GPIO9)
+        .into_async();
 
         let display_interface = ::rmk::display::ssd1306::I2CDisplayInterface::new_custom_address(i2c, 0x3c);
         let display = ::rmk::display::ssd1306::Ssd1306Async::new(
@@ -50,7 +56,7 @@ mod keyboard {
         ).into_buffered_graphics_mode();
 
         // Spawn display task
-        _s.spawn(display_task(display)).unwrap();
+        _s.spawn(display_task(display).unwrap()).unwrap();
     }
 
     #[Override(usb)]
