@@ -10,9 +10,6 @@ type DisplayType = ::rmk::display::ssd1306::Ssd1306Async<
     >,
     ::rmk::display::ssd1306::prelude::DisplaySize128x64,
     ::rmk::display::ssd1306::mode::BufferedGraphicsMode<
-        ::display_interface_i2c::I2CInterface<
-            ::esp_hal::i2c::master::I2c<'static, ::esp_hal::Async>,
-        >,
         ::rmk::display::ssd1306::prelude::DisplaySize128x64,
     >,
 >;
@@ -31,8 +28,7 @@ mod keyboard {
         let p = ::esp_hal::init(::esp_hal::Config::default().with_cpu_clock(::esp_hal::clock::CpuClock::max()));
         ::esp_alloc::heap_allocator!(size: 72 * 1024);
         let timg0 = ::esp_hal::timer::timg::TimerGroup::new(p.TIMG0);
-        let software_interrupt = ::esp_hal::interrupt::software::SoftwareInterruptControl::new(p.SW_INTERRUPT);
-        ::esp_rtos::start(timg0.timer0, software_interrupt.software_interrupt0);
+        ::esp_rtos::start(timg0.timer0, p.FROM_CPU_INTR0);
         let _trng_source = ::esp_hal::rng::TrngSource::new(p.RNG, p.ADC1);
         let connector = ::esp_radio::ble::controller::BleConnector::new(p.BT, Default::default()).unwrap();
         let ble_controller: ::bt_hci::controller::ExternalController<_, 64> = ::bt_hci::controller::ExternalController::new(connector);
@@ -56,14 +52,14 @@ mod keyboard {
         ).into_buffered_graphics_mode();
 
         // Spawn display task
-        _s.spawn(display_task(display).unwrap()).unwrap();
+        _s.spawn(display_task(display).unwrap());
     }
 
     #[Override(usb)]
     fn init_usb() {
         static mut EP_MEMORY: [u8; 1024] = [0; 1024];
-        let usb = ::esp_hal::otg_fs::Usb::new(p.USB0, p.GPIO20, p.GPIO19);
-        let usb_config = ::esp_hal::otg_fs::asynch::Config::default();
-        ::esp_hal::otg_fs::asynch::Driver::new(usb, unsafe { &mut *core::ptr::addr_of_mut!(EP_MEMORY) }, usb_config)
+        let usb = ::esp_hal::usb::otg::Usb::new_fs(p.USB_FS, p.GPIO20, p.GPIO19);
+        let usb_config = ::esp_hal::usb::otg::embassy_usb_device::Config::default();
+        ::esp_hal::usb::otg::embassy_usb_device::Driver::new(usb, unsafe { &mut *core::ptr::addr_of_mut!(EP_MEMORY) }, usb_config)
     }
 }
