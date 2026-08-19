@@ -3,6 +3,7 @@
 
 use esp_backtrace as _;
 use rmk::macros::rmk_keyboard;
+use rmk::core_traits::Runnable;
 
 type DisplayType = ::rmk::display::ssd1306::Ssd1306Async<
     ::display_interface_i2c::I2CInterface<
