@@ -9,7 +9,7 @@ type DisplayType = ::rmk::display::ssd1306::Ssd1306Async<
         ::esp_hal::i2c::master::I2c<'static, ::esp_hal::Async>,
     >,
     ::rmk::display::ssd1306::prelude::DisplaySize128x64,
-    ::rmk::display::ssd1306::mode::BufferedGraphicsMode<
+    ::rmk::display::ssd1306::mode::BufferedGraphicsModeAsync<
         ::rmk::display::ssd1306::prelude::DisplaySize128x64,
     >,
 >;
