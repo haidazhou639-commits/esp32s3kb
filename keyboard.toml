@@ -17,19 +17,29 @@ row2col = true
 [layout]
 rows = 3
 cols = 3
+map = """
+(0,0) (0,1) (0,2)
+(1,0) (1,1) (1,2)
+(2,0) (2,1) (2,2)
+"""
+
+[keymap]
 layers = 2
-keymap = [
-    [
-        ["Kp7", "Kp8", "Kp9"],
-        ["Kp4", "Kp5", "Kp6"],
-        ["Kp1", "Kp2", "MO(1)"]
-    ],
-    [
-        ["MediaPlayPause", "AudioVolUp", "MediaNextTrack"],
-        ["AudioMute", "AudioVolDown", "MediaPrevTrack"],
-        ["_", "_", "MO(1)"]
-    ],
-]
+
+[[keymap.layer]]
+keys = """
+Kp7             Kp8          Kp9
+Kp4             Kp5          Kp6
+Kp1             Kp2          MO(1)
+"""
+
+[[keymap.layer]]
+keys = """
+MediaPlayPause  AudioVolUp   MediaNextTrack
+AudioMute       AudioVolDown MediaPrevTrack
+_               _            MO(1)
+"""
+
 
 [ble]
 enabled = true
