@@ -12,6 +12,7 @@ rmk = { git = "https://github.com/rmk-rs/rmk", default-features = false, feature
     "display",
     "ssd1306",
 ] }
+rmk-types = { git = "https://github.com/rmk-rs/rmk" }
 
 embassy-executor = { version = "0.10.0" }
 esp-backtrace = { version = "0.18", features = [
