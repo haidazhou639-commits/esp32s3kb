@@ -28,6 +28,7 @@ impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColo
             primitives::{Line, PrimitiveStyle, Rectangle},
             text::{Baseline, Text},
             mono_font::{ascii::FONT_6X10, MonoTextStyle},
+            pixelcolor::BinaryColor,
         };
 
         // Clear the screen
@@ -47,14 +48,13 @@ impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColo
             .ok();
 
         // Show BLE connection status in the top right
-        #[cfg(feature = "_ble")]
         {
             let conn_text = match ctx.ble_status.state {
                 ::rmk_types::ble::BleState::Advertising => "Pair",
                 ::rmk_types::ble::BleState::Connected => "Conn",
                 ::rmk_types::ble::BleState::Inactive => "USB",
             };
-            let mut status_buf: ::heapless::String<12> = ::heapless::String::new();
+            let mut status_buf: ::rmk::heapless::String<12> = ::rmk::heapless::String::new();
             let _ = ::core::fmt::write(&mut status_buf, format_args!("P{}:{}", ctx.ble_status.profile, conn_text));
             let x = 124 - (status_buf.len() as i32 * 6);
             Text::with_baseline(&status_buf, Point::new(x, 3), text_style, Baseline::Top)
@@ -109,8 +109,8 @@ impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColo
                     let char_width = 6;
                     let label_width = label.len() as i32 * char_width;
                     let x_offset = (24 - label_width) / 2;
-                    let x = 28 + col * 24 + x_offset;
-                    let y = 16 + row * 16 + 3;
+                    let x = 28 + (col as i32) * 24 + x_offset;
+                    let y = 16 + (row as i32) * 16 + 3;
                     Text::with_baseline(label, Point::new(x, y), text_style, Baseline::Top)
                         .draw(display)
                         .ok();
@@ -123,7 +123,7 @@ impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColo
             .draw(display)
             .ok();
         
-        let mut lyr_buf: ::heapless::String<4> = ::heapless::String::new();
+        let mut lyr_buf: ::rmk::heapless::String<4> = ::rmk::heapless::String::new();
         let _ = ::core::fmt::write(&mut lyr_buf, format_args!("{}", ctx.layer));
         let lyr_x = (28 - (lyr_buf.len() as i32 * 6)) / 2;
         Text::with_baseline(&lyr_buf, Point::new(lyr_x, 38), text_style, Baseline::Top)
@@ -135,7 +135,7 @@ impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColo
             .draw(display)
             .ok();
 
-        let mut wpm_buf: ::heapless::String<4> = ::heapless::String::new();
+        let mut wpm_buf: ::rmk::heapless::String<4> = ::rmk::heapless::String::new();
         let _ = ::core::fmt::write(&mut wpm_buf, format_args!("{}", ctx.wpm));
         let wpm_x = 100 + (28 - (wpm_buf.len() as i32 * 6)) / 2;
         Text::with_baseline(&wpm_buf, Point::new(wpm_x, 38), text_style, Baseline::Top)
