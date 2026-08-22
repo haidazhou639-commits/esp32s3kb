@@ -15,9 +15,138 @@ type DisplayType = ::rmk::display::ssd1306::Ssd1306Async<
     >,
 >;
 
+struct KeyboardLayoutRenderer;
+
+impl ::rmk::display::DisplayRenderer<::embedded_graphics::pixelcolor::BinaryColor> for KeyboardLayoutRenderer {
+    fn render<D: ::embedded_graphics::prelude::DrawTarget<Color = ::embedded_graphics::pixelcolor::BinaryColor>>(
+        &mut self,
+        ctx: &::rmk::display::RenderContext,
+        display: &mut D,
+    ) {
+        use ::embedded_graphics::{
+            prelude::*,
+            primitives::{Line, PrimitiveStyle, Rectangle},
+            text::{Baseline, Text},
+            mono_font::{ascii::FONT_6X10, MonoTextStyle},
+        };
+
+        // Clear the screen
+        display.clear(BinaryColor::Off).ok();
+
+        // 1. Draw top header separator (y = 15)
+        let line_style = PrimitiveStyle::with_stroke(BinaryColor::On, 1);
+        Line::new(Point::new(0, 15), Point::new(127, 15))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+
+        // 2. Draw header in yellow zone
+        let text_style = MonoTextStyle::new(&FONT_6X10, BinaryColor::On);
+        Text::with_baseline("3x3 MACROPAD", Point::new(4, 3), text_style, Baseline::Top)
+            .draw(display)
+            .ok();
+
+        // Show BLE connection status in the top right
+        #[cfg(feature = "_ble")]
+        {
+            let conn_text = match ctx.ble_status.state {
+                ::rmk_types::ble::BleState::Advertising => "Pair",
+                ::rmk_types::ble::BleState::Connected => "Conn",
+                ::rmk_types::ble::BleState::Inactive => "USB",
+            };
+            let mut status_buf: ::heapless::String<12> = ::heapless::String::new();
+            let _ = ::core::fmt::write(&mut status_buf, format_args!("P{}:{}", ctx.ble_status.profile, conn_text));
+            let x = 124 - (status_buf.len() as i32 * 6);
+            Text::with_baseline(&status_buf, Point::new(x, 3), text_style, Baseline::Top)
+                .draw(display)
+                .ok();
+        }
+
+        // 3. Draw 3x3 Key Grid in the blue area (y: 16..63, center x: 28..100)
+        Rectangle::new(Point::new(28, 16), Size::new(72, 48))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+
+        // Vertical separators
+        Line::new(Point::new(52, 16), Point::new(52, 63))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+        Line::new(Point::new(76, 16), Point::new(76, 63))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+
+        // Horizontal separators
+        Line::new(Point::new(28, 32), Point::new(100, 32))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+        Line::new(Point::new(28, 48), Point::new(100, 48))
+            .into_styled(line_style)
+            .draw(display)
+            .ok();
+
+        // Layer labels mapping to the current active layer
+        let labels = match ctx.layer {
+            1 => [
+                ["Ply", "V+", "Nxt"],
+                ["Mut", "V-", "Prv"],
+                ["", "", "L1"],
+            ],
+            _ => [
+                ["7", "8", "9"],
+                ["4", "5", "6"],
+                ["1", "2", "L1"],
+            ],
+        };
+
+        for row in 0..3 {
+            for col in 0..3 {
+                let label = labels[row][col];
+                if !label.is_empty() {
+                    let char_width = 6;
+                    let label_width = label.len() as i32 * char_width;
+                    let x_offset = (24 - label_width) / 2;
+                    let x = 28 + col * 24 + x_offset;
+                    let y = 16 + row * 16 + 3;
+                    Text::with_baseline(label, Point::new(x, y), text_style, Baseline::Top)
+                        .draw(display)
+                        .ok();
+                }
+            }
+        }
+
+        // 4. Draw Info panel on the left (x: 0..28)
+        Text::with_baseline("Lyr", Point::new(4, 22), text_style, Baseline::Top)
+            .draw(display)
+            .ok();
+        
+        let mut lyr_buf: ::heapless::String<4> = ::heapless::String::new();
+        let _ = ::core::fmt::write(&mut lyr_buf, format_args!("{}", ctx.layer));
+        let lyr_x = (28 - (lyr_buf.len() as i32 * 6)) / 2;
+        Text::with_baseline(&lyr_buf, Point::new(lyr_x, 38), text_style, Baseline::Top)
+            .draw(display)
+            .ok();
+
+        // 5. Draw Info panel on the right (x: 100..128)
+        Text::with_baseline("WPM", Point::new(104, 22), text_style, Baseline::Top)
+            .draw(display)
+            .ok();
+
+        let mut wpm_buf: ::heapless::String<4> = ::heapless::String::new();
+        let _ = ::core::fmt::write(&mut wpm_buf, format_args!("{}", ctx.wpm));
+        let wpm_x = 100 + (28 - (wpm_buf.len() as i32 * 6)) / 2;
+        Text::with_baseline(&wpm_buf, Point::new(wpm_x, 38), text_style, Baseline::Top)
+            .draw(display)
+            .ok();
+    }
+}
+
 #[embassy_executor::task]
 async fn display_task(display: DisplayType) {
-    let mut oled = ::rmk::display::DisplayProcessor::with_renderer(display, ::rmk::display::OledRenderer::default());
+    let mut oled = ::rmk::display::DisplayProcessor::with_renderer(display, KeyboardLayoutRenderer);
     oled.run().await;
 }
 
